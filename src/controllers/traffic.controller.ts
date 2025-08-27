@@ -115,6 +115,7 @@ export const getTraffic = async (
         TopKeywords: rapidData?.TopKeywords || [],
         Countries: rapidData?.Countries || [],
         Notification: rapidData?.Notification || {},
+        fetchedAt: Date.now(),
       });
 
       return res.json({
