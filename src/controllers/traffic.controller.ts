@@ -87,36 +87,42 @@ export const getTraffic = async (
       }
 
       // map response to schema
-      const snapshot = await Traffic.create({
-        domain,
-        SiteName: rapidData?.SiteName,
-        Title: rapidData?.Title,
-        Description: rapidData?.Description,
-        Category: rapidData?.Category,
-        LargeScreenshot: rapidData?.LargeScreenshot,
-        IsSmall: rapidData?.IsSmall,
-        IsDataFromGa: rapidData?.IsDataFromGa,
-        Policy: rapidData?.Policy,
-        SnapshotDate: rapidData?.SnapshotDate,
-        Cached: rapidData?.Cached,
+      const snapshot = await Traffic.findOneAndUpdate(
+        { domain },
+        {
+          $set: {
+            domain,
+            SiteName: rapidData?.SiteName,
+            Title: rapidData?.Title,
+            Description: rapidData?.Description,
+            Category: rapidData?.Category,
+            LargeScreenshot: rapidData?.LargeScreenshot,
+            IsSmall: rapidData?.IsSmall,
+            IsDataFromGa: rapidData?.IsDataFromGa,
+            Policy: rapidData?.Policy,
+            SnapshotDate: rapidData?.SnapshotDate,
+            Cached: rapidData?.Cached,
 
-        TopCountryShares: rapidData?.TopCountryShares || [],
-        Engagments: rapidData?.Engagments || {},
-        EstimatedMonthlyVisits: rapidData?.EstimatedMonthlyVisits || {},
-        GlobalRank: rapidData?.GlobalRank?.Rank,
-        CountryRank: rapidData?.CountryRank,
-        CategoryRank: rapidData?.CategoryRank,
-        GlobalCategoryRank: rapidData?.GlobalCategoryRank,
-        TrafficSources: rapidData?.TrafficSources || {},
-        Competitors: {
-          TopSimilarityCompetitors:
-            rapidData?.Competitors?.TopSimilarityCompetitors || [],
+            TopCountryShares: rapidData?.TopCountryShares || [],
+            Engagments: rapidData?.Engagments || {},
+            EstimatedMonthlyVisits: rapidData?.EstimatedMonthlyVisits || {},
+            GlobalRank: rapidData?.GlobalRank?.Rank,
+            CountryRank: rapidData?.CountryRank,
+            CategoryRank: rapidData?.CategoryRank,
+            GlobalCategoryRank: rapidData?.GlobalCategoryRank,
+            TrafficSources: rapidData?.TrafficSources || {},
+            Competitors: {
+              TopSimilarityCompetitors:
+                rapidData?.Competitors?.TopSimilarityCompetitors || [],
+            },
+            TopKeywords: rapidData?.TopKeywords || [],
+            Countries: rapidData?.Countries || [],
+            Notification: rapidData?.Notification || {},
+            fetchedAt: Date.now(),
+          },
         },
-        TopKeywords: rapidData?.TopKeywords || [],
-        Countries: rapidData?.Countries || [],
-        Notification: rapidData?.Notification || {},
-        fetchedAt: Date.now(),
-      });
+        { upsert: true, new: true }
+      );
 
       return res.json({
         data: snapshot,
