@@ -3,6 +3,7 @@
     "target": "ES2020",
     "module": "ES2020",
     "types": ["node"],
+    "typeRoots": ["./node_modules/@types"],
     "moduleResolution": "Node",
     "outDir": "dist",
     "rootDir": "src",
