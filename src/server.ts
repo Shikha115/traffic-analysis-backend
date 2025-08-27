@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
@@ -18,7 +18,7 @@ app.use(express.json());
 app.use(morgan("dev")); // logger
 
 app.use("/api", router);
-app.get("*", (_req, res) => res.json({ message: "Not Found" }));
+app.get("*", (_req:Request, res:Response) => res.json({ message: "Not Found" }));
 
 app.use(errorHandler);
 
