@@ -76,52 +76,52 @@ export const getTraffic = async (
 
     if (cached) {
       return res.json({ data: cached, message: "Cache hit" });
+    } else {
+      // fetch from RapidAPI
+      const rapidData = await getTrafficMetricsFromRapid(domain);
+      console.log("RapidAPI data:", rapidData); // log first 1000 chars
+      if (!rapidData) {
+        return res
+          .status(500)
+          .json({ message: "Failed to fetch from RapidAPI", data: [] });
+      }
+
+      // map response to schema
+      const snapshot = await Traffic.create({
+        domain,
+        SiteName: rapidData?.SiteName,
+        Title: rapidData?.Title,
+        Description: rapidData?.Description,
+        Category: rapidData?.Category,
+        LargeScreenshot: rapidData?.LargeScreenshot,
+        IsSmall: rapidData?.IsSmall,
+        IsDataFromGa: rapidData?.IsDataFromGa,
+        Policy: rapidData?.Policy,
+        SnapshotDate: rapidData?.SnapshotDate,
+        Cached: rapidData?.Cached,
+
+        TopCountryShares: rapidData?.TopCountryShares || [],
+        Engagments: rapidData?.Engagments || {},
+        EstimatedMonthlyVisits: rapidData?.EstimatedMonthlyVisits || {},
+        GlobalRank: rapidData?.GlobalRank?.Rank,
+        CountryRank: rapidData?.CountryRank,
+        CategoryRank: rapidData?.CategoryRank,
+        GlobalCategoryRank: rapidData?.GlobalCategoryRank,
+        TrafficSources: rapidData?.TrafficSources || {},
+        Competitors: {
+          TopSimilarityCompetitors:
+            rapidData?.Competitors?.TopSimilarityCompetitors || [],
+        },
+        TopKeywords: rapidData?.TopKeywords || [],
+        Countries: rapidData?.Countries || [],
+        Notification: rapidData?.Notification || {},
+      });
+
+      return res.json({
+        data: snapshot,
+        message: "Traffic data fetched successfully",
+      });
     }
-
-    // fetch from RapidAPI
-    const rapidData = await getTrafficMetricsFromRapid(domain);
-    console.log("RapidAPI data:", rapidData); // log first 1000 chars
-    if (!rapidData) {
-      return res
-        .status(500)
-        .json({ message: "Failed to fetch from RapidAPI", data: [] });
-    }
-
-    // map response to schema
-    const snapshot = await Traffic.create({
-      domain,
-      SiteName: rapidData?.SiteName,
-      Title: rapidData?.Title,
-      Description: rapidData?.Description,
-      Category: rapidData?.Category,
-      LargeScreenshot: rapidData?.LargeScreenshot,
-      IsSmall: rapidData?.IsSmall,
-      IsDataFromGa: rapidData?.IsDataFromGa,
-      Policy: rapidData?.Policy,
-      SnapshotDate: rapidData?.SnapshotDate,
-      Cached: rapidData?.Cached,
-
-      TopCountryShares: rapidData?.TopCountryShares || [],
-      Engagments: rapidData?.Engagments || {},
-      EstimatedMonthlyVisits: rapidData?.EstimatedMonthlyVisits || {},
-      GlobalRank: rapidData?.GlobalRank?.Rank,
-      CountryRank: rapidData?.CountryRank,
-      CategoryRank: rapidData?.CategoryRank,
-      GlobalCategoryRank: rapidData?.GlobalCategoryRank,
-      TrafficSources: rapidData?.TrafficSources || {},
-      Competitors: {
-        TopSimilarityCompetitors:
-          rapidData?.Competitors?.TopSimilarityCompetitors || [],
-      },
-      TopKeywords: rapidData?.TopKeywords || [],
-      Countries: rapidData?.Countries || [],
-      Notification: rapidData?.Notification || {},
-    });
-
-    return res.json({
-      data: snapshot,
-      message: "Traffic data fetched successfully",
-    });
   } catch (err) {
     next(err);
   }
