@@ -49,7 +49,7 @@ async function getTrafficMetricsFromRapid(domain: string) {
     return data;
   } catch (err: any) {
     console.error("RapidAPI fetch failed:", err.response?.data || err.message);
-    return err.response?.data || err.message || null;
+    return  null;
   }
 }
 
